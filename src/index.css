@@ -13,3 +13,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.unassigned-row {
+  background-color: #ec3853;
+}
+
+.low-priority {
+  background-color: #f3e97f;
+}
