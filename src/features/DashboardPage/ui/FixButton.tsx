@@ -7,8 +7,19 @@ interface FixButtonProps {
 }
 
 export const FixButton: React.FC<FixButtonProps> = ({ task, onFixClick }) => {
-  const handleClick = () => {
-    onFixClick(task);
-  };
-  return <Button variant="contained" onClick={handleClick}>Fix</Button>;
+  if (!task) return null;
+  const isProblem = !task.assignee || task.priority === 'Low';
+
+  if (!isProblem) return null;
+
+  return (
+    <Button
+      variant="contained"
+      color="warning"
+      size="small"
+      onClick={() => onFixClick(task)}
+    >
+      Fix
+    </Button>
+  );
 };

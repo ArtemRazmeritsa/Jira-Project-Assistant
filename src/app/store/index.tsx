@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import tasksSlice from '../../features/DashboardPage/model/tasksSlice';
+import jiraReducer from '../../features/DashboardPage/slices/jiraSlice';
+
+
+
 
 export const store = configureStore({
   reducer: {
-    tasks: tasksSlice,
+    jira: jiraReducer
   },
 });
 

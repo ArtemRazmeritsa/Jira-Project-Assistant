@@ -1,23 +1,85 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTasks } from './model/tasksThunks';
 import type { AppDispatch, RootState } from '../../app/store';
-import { TaskTable } from './ui/TaskTable';
-import { CircularProgress, Alert } from '@mui/material';
 import type { Task } from '../../shared/api/types';
+import {
+  fetchTasks,
+  fetchUsers,
+  updateTaskAssigned,
+  updateTaskPriority,
+} from './slices/jiraThunks';
+import { Alert, Box, CircularProgress } from '@mui/material';
+import { TaskTable } from './ui/TaskTable';
+import { FixModal } from './ui/modals/FixModal';
+import { PriorityModal } from './ui/modals/PriorityModal';
 
 export const DashboardPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error } = useSelector((s: RootState) => s.tasks);
+  const { tasks, users, loading, error } = useSelector(
+    (s: RootState) => s.jira
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [modalType, setModalType] = useState<'assign' | 'priority' | null>(
+    null
+  );
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchTasks());
+    Promise.all([
+      dispatch(fetchTasks()).unwrap(),
+      dispatch(fetchUsers()).unwrap(),
+    ])
+      .then(() => setIsDataLoaded(true))
+      .catch((err) => console.error('Error loading data:', err));
   }, [dispatch]);
 
-  if (loading || !items) {
+  const handleFixClick = (task: Task) => {
+    setSelectedTask(task);
+    setModalType(!task.assignee ? 'assign' : 'priority');
+    setIsModalOpen(true);
+  };
+
+  const handleAssign = useCallback(
+    async (userId: string) => {
+      if (selectedTask) {
+        try {
+          await dispatch(
+            updateTaskAssigned({ taskId: selectedTask.id, userId })
+          ).unwrap();
+          setIsModalOpen(false);
+          setSelectedTask(null);
+          setModalType(null);
+        } catch (error) {
+          console.error('Error assigning task:', error);
+        }
+      }
+    },
+    [dispatch, selectedTask]
+  );
+
+  const handleUpdatePriority = useCallback(
+    async (priority: string) => {
+      if (selectedTask) {
+        try {
+          await dispatch(
+            updateTaskPriority({ taskId: selectedTask.id, priority })
+          ).unwrap();
+          setIsModalOpen(false);
+          setSelectedTask(null);
+          setModalType(null);
+        } catch (error) {
+          console.error('Error updating priority:', error);
+        }
+      }
+    },
+    [dispatch, selectedTask]
+  );
+
+  if (loading || !isDataLoaded) {
     return (
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -25,19 +87,43 @@ export const DashboardPage = () => {
         }}
       >
         <CircularProgress />
-      </div>
+      </Box>
     );
   }
   if (error) return <Alert severity="error">{error}</Alert>;
-
-  const handleFix = (updatedTask: Task) => {
-    console.log('Handling fix:', updatedTask);
-  };
+  if (!tasks || tasks.length === 0 || !users || users.length === 0) {
+    return <Alert severity="info">No tasks or users available</Alert>;
+  }
 
   return (
     <div>
       <h2>Tasks</h2>
-      <TaskTable tasks={items} onFixClick={handleFix} />
+      <TaskTable tasks={tasks} users={users} onFixClick={handleFixClick} />
+      {isModalOpen && modalType === 'assign' && (
+        <FixModal
+          task={selectedTask}
+          open={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedTask(null);
+            setModalType(null);
+          }}
+          users={users}
+          onAssign={handleAssign}
+        />
+      )}
+      {isModalOpen && modalType === 'priority' && (
+        <PriorityModal
+          task={selectedTask}
+          open={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedTask(null);
+            setModalType(null);
+          }}
+          onUpdatePriority={handleUpdatePriority}
+        />
+      )}
     </div>
   );
 };

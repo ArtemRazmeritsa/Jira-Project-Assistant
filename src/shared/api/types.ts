@@ -6,5 +6,11 @@ export interface Task {
   summary: string;
   status: string;
   assignee: string | null;
-  priority: Priority;
+  priority: string;
+  dueDate: string;
+}
+
+export interface User {
+  displayName: string;
+  accountId: string;
 }

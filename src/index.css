@@ -13,10 +13,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.unassigned-row {
-  background-color: #ec3853;
+.high-priority  {
+  background-color: #e72b2b !important;
 }
-
 .low-priority {
-  background-color: #f3e97f;
+  background-color: #eabe56 !important;
 }
