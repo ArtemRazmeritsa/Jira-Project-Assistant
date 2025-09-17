@@ -3,15 +3,21 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { Task, User } from '../../../shared/api/types';
 import { jiraApi } from '../../../shared/api/jiraApi';
 
-export const fetchTasks = createAsyncThunk<Task[]>('jira/fetchTasks', async () => {
-  const tasks = await jiraApi.fetchTasks();
-  return tasks;
-});
+export const fetchTasks = createAsyncThunk<Task[]>(
+  'jira/fetchTasks',
+  async () => {
+    const tasks = await jiraApi.fetchTasks();
+    return tasks;
+  }
+);
 
-export const fetchUsers = createAsyncThunk<User[]>('jira/fetchUsers', async () => {
-  const users = await jiraApi.fetchUsers();
-  return users;
-});
+export const fetchUsers = createAsyncThunk<User[]>(
+  'jira/fetchUsers',
+  async () => {
+    const users = await jiraApi.fetchUsers();
+    return users;
+  }
+);
 
 export const updateTaskAssigned = createAsyncThunk(
   'jira/updateTaskAssigned',

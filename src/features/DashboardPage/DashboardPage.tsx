@@ -10,8 +10,12 @@ import {
 } from './slices/jiraThunks';
 import { Alert, Box, CircularProgress } from '@mui/material';
 import { TaskTable } from './ui/TaskTable';
-import { FixModal } from './ui/modals/FixModal';
+
 import { PriorityModal } from './ui/modals/PriorityModal';
+import { ProjectToolbar } from './ui/ProjectToolbar';
+import { AssignModal } from './ui/modals/AssignModal';
+
+type ModalType = 'assign' | 'priority';
 
 export const DashboardPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,9 +24,7 @@ export const DashboardPage = () => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [modalType, setModalType] = useState<'assign' | 'priority' | null>(
-    null
-  );
+  const [modalType, setModalType] = useState<ModalType | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
@@ -34,47 +36,47 @@ export const DashboardPage = () => {
       .catch((err) => console.error('Error loading data:', err));
   }, [dispatch]);
 
-  const handleFixClick = (task: Task) => {
+  const handleFixClick = useCallback((task: Task) => {
     setSelectedTask(task);
     setModalType(!task.assignee ? 'assign' : 'priority');
     setIsModalOpen(true);
+  }, []);
+
+  const handleAssign = async (userId: string) => {
+    if (selectedTask) {
+      try {
+        await dispatch(
+          updateTaskAssigned({ taskId: selectedTask.id, userId })
+        ).unwrap();
+        setIsModalOpen(false);
+        setSelectedTask(null);
+        setModalType(null);
+      } catch (error) {
+        console.error('Error assigning task:', error);
+      }
+    }
   };
 
-  const handleAssign = useCallback(
-    async (userId: string) => {
-      if (selectedTask) {
-        try {
-          await dispatch(
-            updateTaskAssigned({ taskId: selectedTask.id, userId })
-          ).unwrap();
-          setIsModalOpen(false);
-          setSelectedTask(null);
-          setModalType(null);
-        } catch (error) {
-          console.error('Error assigning task:', error);
-        }
+  const handleUpdatePriority = async (priority: string) => {
+    if (selectedTask) {
+      try {
+        await dispatch(
+          updateTaskPriority({ taskId: selectedTask.id, priority })
+        ).unwrap();
+        setIsModalOpen(false);
+        setSelectedTask(null);
+        setModalType(null);
+      } catch (error) {
+        console.error('Error updating priority:', error);
       }
-    },
-    [dispatch, selectedTask]
-  );
+    }
+  };
 
-  const handleUpdatePriority = useCallback(
-    async (priority: string) => {
-      if (selectedTask) {
-        try {
-          await dispatch(
-            updateTaskPriority({ taskId: selectedTask.id, priority })
-          ).unwrap();
-          setIsModalOpen(false);
-          setSelectedTask(null);
-          setModalType(null);
-        } catch (error) {
-          console.error('Error updating priority:', error);
-        }
-      }
-    },
-    [dispatch, selectedTask]
-  );
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
+    setModalType(null);
+  };
 
   if (loading || !isDataLoaded) {
     return (
@@ -97,17 +99,14 @@ export const DashboardPage = () => {
 
   return (
     <div>
+      <ProjectToolbar tasks={tasks} users={users} />
       <h2>Tasks</h2>
-      <TaskTable tasks={tasks} users={users} onFixClick={handleFixClick} />
+      <TaskTable tasks={tasks} onFixClick={handleFixClick} users={users} />
       {isModalOpen && modalType === 'assign' && (
-        <FixModal
+        <AssignModal
           task={selectedTask}
           open={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedTask(null);
-            setModalType(null);
-          }}
+          onClose={handleModalClose}
           users={users}
           onAssign={handleAssign}
         />
@@ -116,11 +115,7 @@ export const DashboardPage = () => {
         <PriorityModal
           task={selectedTask}
           open={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedTask(null);
-            setModalType(null);
-          }}
+          onClose={handleModalClose}
           onUpdatePriority={handleUpdatePriority}
         />
       )}

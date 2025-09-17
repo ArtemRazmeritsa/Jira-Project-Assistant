@@ -42,8 +42,9 @@ const jiraSlice = createSlice({
       })
       .addCase(updateTaskAssigned.fulfilled, (state, action) => {
         const { taskId, userId } = action.payload;
-        const task = state.tasks.find((t) => t.id === taskId);
-        if (task) task.assignee = userId;
+        state.tasks = state.tasks.map((task) =>
+          task.id === taskId ? { ...task, assignee: userId } : task
+        );
       })
       .addCase(updateTaskPriority.fulfilled, (state, action) => {
         const { taskId, priority } = action.payload;
@@ -60,8 +61,7 @@ const jiraSlice = createSlice({
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Ошибка загрузки пользователей';
-      })
-      
+      });
   },
 });
 

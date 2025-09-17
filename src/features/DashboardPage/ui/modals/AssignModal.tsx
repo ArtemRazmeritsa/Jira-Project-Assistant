@@ -11,7 +11,7 @@ import {
 import { useState } from 'react';
 import type { Task, User } from '../../../../shared/api/types';
 
-interface FixModalProps {
+interface AssignModalProps {
   task: Task | null;
   open: boolean;
   users: User[];
@@ -19,7 +19,7 @@ interface FixModalProps {
   onAssign: (userId: string) => void;
 }
 
-export const FixModal: React.FC<FixModalProps> = ({
+export const AssignModal: React.FC<AssignModalProps> = ({
   task,
   open,
   onClose,
@@ -47,7 +47,7 @@ export const FixModal: React.FC<FixModalProps> = ({
             onChange={(e) => setSelectedUser(e.target.value)}
           >
             {users.map((user) => (
-              <MenuItem key={user.accountId} value={user.displayName}>
+              <MenuItem key={user.accountId} value={user.accountId}>
                 {user.displayName}
               </MenuItem>
             ))}
@@ -56,7 +56,7 @@ export const FixModal: React.FC<FixModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Закрыть</Button>
-        <Button onClick={handleAssign} disabled={!selectedUser || !task}>
+        <Button onClick={handleAssign} >
           Назначить
         </Button>
       </DialogActions>
