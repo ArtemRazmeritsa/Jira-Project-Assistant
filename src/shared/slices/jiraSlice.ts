@@ -5,8 +5,9 @@ import {
   updateTaskAssigned,
   updateTaskPriority,
 } from './jiraThunks';
-import type { Task, User } from '../api/types';
 
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { Priority, Task, User } from '@/shared/api/types';
 
 interface JiraState {
   tasks: Task[];
@@ -29,40 +30,64 @@ const jiraSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Tasks
-      .addCase(fetchTasks.pending, (state) => {
+      .addCase(fetchTasks.pending, (state: JiraState) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTasks.fulfilled, (state, action) => {
-        state.tasks = action.payload;
-        state.loading = false;
-      })
-      .addCase(fetchTasks.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Ошибка загрузки задач';
-      })
-      .addCase(updateTaskAssigned.fulfilled, (state, action) => {
-        const { taskId, userId } = action.payload;
-        state.tasks = state.tasks.map((task) =>
-          task.id === taskId ? { ...task, assignee: userId } : task
-        );
-      })
-      .addCase(updateTaskPriority.fulfilled, (state, action) => {
-        const { taskId, priority } = action.payload;
-        const task = state.tasks.find((t) => t.id === taskId);
-        if (task) {
-          task.priority = priority;
+      .addCase(
+        fetchTasks.fulfilled,
+        (state: JiraState, action: PayloadAction<Task[]>) => {
+          state.tasks = action.payload;
+          state.loading = false;
         }
-      })
+      )
+      .addCase(
+        fetchTasks.rejected,
+        (state: JiraState, action: PayloadAction<string | undefined>) => {
+          state.loading = false;
+          state.error = action.payload || 'Error loading tasks';
+        }
+      )
+      .addCase(
+        updateTaskAssigned.fulfilled,
+        (
+          state: JiraState,
+          action: PayloadAction<{ taskId: string; userId: string }>
+        ) => {
+          const { taskId, userId } = action.payload;
+          state.tasks = state.tasks.map((task) =>
+            task.id === taskId ? { ...task, assignee: userId } : task
+          );
+        }
+      )
+      .addCase(
+        updateTaskPriority.fulfilled,
+        (
+          state: JiraState,
+          action: PayloadAction<{ taskId: string; priority: string }>
+        ) => {
+          const { taskId, priority } = action.payload;
+          const task = state.tasks.find((t) => t.id === taskId);
+          if (task) {
+            task.priority = priority as Priority;
+          }
+        }
+      )
       // Users
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.users = action.payload;
-        state.loading = false;
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Ошибка загрузки пользователей';
-      });
+      .addCase(
+        fetchUsers.fulfilled,
+        (state: JiraState, action: PayloadAction<User[]>) => {
+          state.users = action.payload;
+          state.loading = false;
+        }
+      )
+      .addCase(
+        fetchUsers.rejected,
+        (state: JiraState, action: PayloadAction<string | undefined>) => {
+          state.loading = false;
+          state.error = action.payload || 'Error loading users';
+        }
+      );
   },
 });
 

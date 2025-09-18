@@ -1,19 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../../app/store';
-import type { Task } from '../../shared/api/types';
+import { Alert, Box } from '@mui/material';
+import type { AppDispatch, RootState } from '@/app/store';
+import type { Task } from '@/shared/api/types';
 import {
   fetchTasks,
   fetchUsers,
   updateTaskAssigned,
   updateTaskPriority,
-} from '../../shared/slices/jiraThunks';
-import { Alert, Box, CircularProgress } from '@mui/material';
-import { TaskTable } from './ui/TaskTable';
-
-import { PriorityModal } from './ui/modals/PriorityModal';
-import { ProjectToolbar } from './ui/ProjectToolbar';
-import { AssignModal } from './ui/modals/AssignModal';
+} from '@/shared/slices/jiraThunks';
+import { ProjectToolbar } from '@/features/DashboardPage/ui/ProjectToolbar';
+import { TaskTable } from '@/features/DashboardPage/ui/TaskTable';
+import { AssignModal } from '@/features/DashboardPage/ui/modals/AssignModal';
+import { PriorityModal } from '@/features/DashboardPage/ui/modals/PriorityModal';
+import { Preloader } from '@/shared/ui/preloader';
 
 type ModalType = 'assign' | 'priority';
 
@@ -36,11 +36,11 @@ export const DashboardPage = () => {
       .catch((err) => console.error('Error loading data:', err));
   }, [dispatch]);
 
-  const handleFixClick = useCallback((task: Task) => {
+  const handleFixClick = (task: Task) => {
     setSelectedTask(task);
     setModalType(!task.assignee ? 'assign' : 'priority');
     setIsModalOpen(true);
-  }, []);
+  };
 
   const handleAssign = async (userId: string) => {
     if (selectedTask) {
@@ -79,19 +79,9 @@ export const DashboardPage = () => {
   };
 
   if (loading || !isDataLoaded) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <Preloader />;
   }
+
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!tasks || tasks.length === 0 || !users || users.length === 0) {
     return <Alert severity="info">No tasks or users available</Alert>;
@@ -100,12 +90,17 @@ export const DashboardPage = () => {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        padding: 2, 
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 2,
       }}
     >
       <ProjectToolbar tasks={tasks} users={users} />
-      <TaskTable tasks={tasks} onFixClick={handleFixClick} users={users} />
+      <Box sx={{ width: '100%', maxWidth: '1200px' }}>
+        <TaskTable tasks={tasks} onFixClick={handleFixClick} users={users} />
+      </Box>
       {isModalOpen && modalType === 'assign' && (
         <AssignModal
           task={selectedTask}

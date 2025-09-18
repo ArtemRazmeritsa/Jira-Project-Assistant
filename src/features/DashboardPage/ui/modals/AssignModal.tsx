@@ -1,3 +1,4 @@
+import type { Task, User } from '@/shared/api/types';
 import {
   Dialog,
   DialogTitle,
@@ -9,7 +10,6 @@ import {
   FormControl,
 } from '@mui/material';
 import { useState } from 'react';
-import type { Task, User } from '../../../../shared/api/types';
 
 interface AssignModalProps {
   task: Task | null;
@@ -56,9 +56,7 @@ export const AssignModal: React.FC<AssignModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Закрыть</Button>
-        <Button onClick={handleAssign} >
-          Назначить
-        </Button>
+        <Button onClick={handleAssign}>Назначить</Button>
       </DialogActions>
     </Dialog>
   );

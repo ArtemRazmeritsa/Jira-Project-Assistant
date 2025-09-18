@@ -1,4 +1,5 @@
-import type { Task, User } from './types';
+import type { Task, User } from "@/shared/api/types";
+
 
 // Моковые задачи и запросы
 export const mockTasks: Task[] = [

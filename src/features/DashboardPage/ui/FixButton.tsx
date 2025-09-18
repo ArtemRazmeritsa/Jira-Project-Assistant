@@ -1,5 +1,5 @@
+import type { Task } from '@/shared/api/types';
 import { Button } from '@mui/material';
-import type { Task } from '../../../shared/api/types';
 
 interface FixButtonProps {
   task: Task;

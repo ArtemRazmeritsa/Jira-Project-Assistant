@@ -1,10 +1,9 @@
+import { DashboardPage } from '@/features/DashboardPage';
+import { TeamPage } from '@/features/TeamPage';
 import { Box, Tab, Tabs } from '@mui/material';
-import { DashboardPage } from '../features/DashboardPage';
 import { useState } from 'react';
-import TeamPage from '../features/TeamPage/TeamPage';
 
-
-function App() {
+export const App = () => {
   const [value, setValue] = useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -12,15 +11,26 @@ function App() {
   };
 
   return (
-    <Box>
-      <Tabs value={value} onChange={handleChange}>
+    <Box sx={{ width: '100%', minHeight: '80vh' }}>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        variant="fullWidth"
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          '& .MuiTabs-indicator': {
+            backgroundColor: '#1976d2',
+          },
+        }}
+      >
         <Tab label="Tasks" />
         <Tab label="Team" />
       </Tabs>
-      {value === 0 && <DashboardPage />}
-      {value === 1 && <TeamPage />}
+      <Box>
+        {value === 0 && <DashboardPage />}
+        {value === 1 && <TeamPage />}
+      </Box>
     </Box>
   );
-}
-
-export default App;
+};

@@ -9,7 +9,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import type { Priority, Task } from '../../../../shared/api/types';
+import type { Priority, Task } from '@/shared/api/types';
 
 interface PriorityModalProps {
   task: Task | null;
