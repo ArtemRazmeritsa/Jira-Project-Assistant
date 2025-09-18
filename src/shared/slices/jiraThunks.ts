@@ -1,7 +1,7 @@
 // alias пока не работают, позже разберусь
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import type { Task, User } from '../../../shared/api/types';
-import { jiraApi } from '../../../shared/api/jiraApi';
+import { jiraApi } from '../api/jiraApi';
+import type { Task, User } from '../api/types';
 
 export const fetchTasks = createAsyncThunk<Task[]>(
   'jira/fetchTasks',

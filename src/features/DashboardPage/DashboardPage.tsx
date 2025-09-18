@@ -7,7 +7,7 @@ import {
   fetchUsers,
   updateTaskAssigned,
   updateTaskPriority,
-} from './slices/jiraThunks';
+} from '../../shared/slices/jiraThunks';
 import { Alert, Box, CircularProgress } from '@mui/material';
 import { TaskTable } from './ui/TaskTable';
 
@@ -98,9 +98,13 @@ export const DashboardPage = () => {
   }
 
   return (
-    <div>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        padding: 2, 
+      }}
+    >
       <ProjectToolbar tasks={tasks} users={users} />
-      <h2>Tasks</h2>
       <TaskTable tasks={tasks} onFixClick={handleFixClick} users={users} />
       {isModalOpen && modalType === 'assign' && (
         <AssignModal
@@ -119,6 +123,6 @@ export const DashboardPage = () => {
           onUpdatePriority={handleUpdatePriority}
         />
       )}
-    </div>
+    </Box>
   );
 };

@@ -1,3 +1,3 @@
 export { DashboardPage } from './DashboardPage';
-export * from './slices/jiraSlice';
-export * from './slices/jiraThunks';
+export * from '../../shared/slices/jiraSlice';
+export * from '../../shared/slices/jiraThunks';

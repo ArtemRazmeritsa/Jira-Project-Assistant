@@ -5,7 +5,8 @@ import {
   updateTaskAssigned,
   updateTaskPriority,
 } from './jiraThunks';
-import type { Task, User } from '../../../shared/api/types';
+import type { Task, User } from '../api/types';
+
 
 interface JiraState {
   tasks: Task[];

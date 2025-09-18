@@ -4,8 +4,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,7 +14,7 @@
 }
 
 .high-priority  {
-  background-color: #e72b2b !important;
+  background-color: #f34040 !important;
 }
 .low-priority {
   background-color: #eabe56 !important;

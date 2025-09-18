@@ -17,7 +17,7 @@ import {
 import { useDispatch } from 'react-redux';
 import type { Task, User } from '../../../shared/api/types';
 import type { AppDispatch } from '../../../app/store';
-import { updateTaskAssigned } from '..';
+import { updateTaskAssigned } from '../../../shared/slices/jiraThunks';
 
 interface ProjectToolbarProps {
   tasks: Task[];
@@ -56,7 +56,7 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
       ).unwrap();
     }
   };
-  
+
   const getTaskWord = (count: number) => {
     if (count >= 1 && count <= 4) return 'задачи';
     return 'зач';
@@ -69,9 +69,10 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: 2,
+          p: 2,
           mb: 2,
-          borderRadius: 2,
+          borderRadius: 4,
+          background: '#f0f7ff',
         }}
       >
         <Box>
@@ -100,15 +101,31 @@ export const ProjectToolbar: React.FC<ProjectToolbarProps> = ({
           </FormControl>
 
           <Button
-            variant="contained"
-            color="primary"
             onClick={handleAutoAssignConfirm}
             disabled={unassignedCount === 0}
+            sx={{
+              background: 'linear-gradient(45deg, #6a11cb, #2575fc)',
+              color: 'white',
+              px: 3,
+              fontWeight: 'bold',
+              textTransform: 'none',
+              borderRadius: 2,
+              '&:hover': {
+                background: 'linear-gradient(45deg, #5a0fb8, #1d63d8)',
+                boxShadow: '0 0 12px rgba(37,117,252,0.5)',
+              },
+              '&.Mui-disabled': {
+                background: '#bdbdbd',
+                color: '#f5f5f5',
+                boxShadow: 'none',
+              },
+            }}
           >
             Auto-assign unassigned
           </Button>
         </Box>
       </Paper>
+
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>Подтверждение</DialogTitle>
         <DialogContent>

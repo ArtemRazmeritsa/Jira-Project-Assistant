@@ -15,7 +15,7 @@ export const FixButton: React.FC<FixButtonProps> = ({ task, onFixClick }) => {
   return (
     <Button
       variant="contained"
-      color="warning"
+      color="primary"
       size="small"
       onClick={() => onFixClick(task)}
     >
